@@ -16,6 +16,8 @@
 struct tcphdr *tcp_header;
 struct iphdr *ip_header;
 
+char *target_url;
+
 void dump(unsigned char *buf, int size) {
     int i;
     for (i = 0; i < size; i++) {
@@ -123,7 +125,7 @@ int main(int argc, char **argv) {
     int fd;
     int rv;
     char buf[4096] __attribute__((aligned));
-    char *target_url = argv[1];
+    target_url = argv[1];
 
     printf("opening library handle\n");
     h = nfq_open();
