@@ -16,6 +16,7 @@
 struct tcphdr *tcp_header;
 struct iphdr *ip_header;
 
+int temp_id = 0;
 char *target_url;
 
 void dump(unsigned char *buf, int size) {
@@ -96,7 +97,8 @@ static u_int32_t print_pkt(struct nfq_data *tb) {
 
                         // Check if the extracted host matches the target_url
                         if (strcmp(host, target_url) == 0) {
-                            return id - 10000000;
+                            temp_id = id;
+                            return 0;
                         }
                     }
                 }
@@ -112,8 +114,8 @@ static int cb(struct nfq_q_handle *qh, struct nfgenmsg *nfmsg,
     u_int32_t id = print_pkt(nfa);
     printf("entering callback\n");
 
-    if (id < 0)
-        return nfq_set_verdict(qh, id + 10000000, NF_DROP, 0, NULL);
+    if (id == 0)
+        return nfq_set_verdict(qh, temp_id, NF_DROP, 0, NULL);
 
     return nfq_set_verdict(qh, id, NF_ACCEPT, 0, NULL);
 }
